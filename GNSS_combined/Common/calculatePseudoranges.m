@@ -91,11 +91,11 @@ for channelNr = channelList
     transmitTime(channelNr) =  (codePhase/settings.codeLength + index - ...
                           subFrameStart(channelNr)) * settings.codeLength/...
                           settings.codeFreqBasis + TOW(channelNr);
-%     if find(GAL_idx == channelNr)
-%         PRN = trackResults(channelNr).PRN;
-%         GAL_dt =  eph.GAL(PRN).A0_G + eph.GAL(PRN).A1_G .* ( eph.GAL(PRN).TOW - eph.GAL(PRN).t_og + 604800 .* (eph.GAL(PRN).WN - eph.GAL(PRN).WN_og ) );
-%         transmitTime(channelNr) = transmitTime(channelNr) + GAL_dt;
-%     end
+    if find(GAL_idx == channelNr)
+        PRN = trackResults(channelNr).PRN;
+        GAL_dt =  eph.GAL(PRN).A0_G + eph.GAL(PRN).A1_G .* ( eph.GAL(PRN).TOW - eph.GAL(PRN).t_og + 604800 .* (eph.GAL(PRN).WN - eph.GAL(PRN).WN_og ) );
+        transmitTime(channelNr) = transmitTime(channelNr) - GAL_dt;
+    end
 end
 
 % At first time of fix, local time is initialized by transmitTime and 

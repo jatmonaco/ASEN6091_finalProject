@@ -1,8 +1,7 @@
-function plotCEP(navResults, truth)
+function plotCEP(navResults, figNum)
 %% Plotting 90% CEP 
-if ~exist('truth','var')
-    truth = [mean(navResults.E), mean(navResults.N), mean(navResults.U)];
-end
+truth = [mean(navResults.E), mean(navResults.N), mean(navResults.U)];
+
 
 num_points = length(navResults.N);
 thresh = 0.9;   % CEP threshold
@@ -14,7 +13,7 @@ while(CEP_test < num_points * thresh)
     CEP_test = sum((navResults.E - truth(1)).^2 + (navResults.N - truth(2)).^2 < CEP_thresh.^2);
 end    
 
-figure(510);
+figure(figNum);
 clf;
 hold on;
 scatter(navResults.E - truth(1), navResults.N - truth(2), 'x' );

@@ -197,6 +197,7 @@ for currMeasNr = 1:measNrSum
         NaN(settings.numberOfChannels, 1);
     navSolutions.satClkCorr(:, currMeasNr) = ...
         NaN(settings.numberOfChannels, 1);
+    navSolutions.dtsys(currMeasNr) = NaN;
     % Position index of current measurement time in IF signal stream
     % (in unit IF signal sample point)
     currMeasSample = sampleStart + measSampleStep*(currMeasNr-1);
@@ -236,19 +237,22 @@ for currMeasNr = 1:measNrSum
         [xyzdt,navSolutions.el(activeChnList, currMeasNr), ...
             navSolutions.az(activeChnList, currMeasNr), ...
             navSolutions.DOP(:, currMeasNr)] =...
-            leastSquarePos(satPositions_, clkCorrRawP,settings);
+            leastSquarePos_combined(satPositions_, clkCorrRawP,settings,GAL_chn);
 
         %=== Save results ===========================================================
         % Receiver position in ECEF
         navSolutions.X(currMeasNr)  = xyzdt(1);
         navSolutions.Y(currMeasNr)  = xyzdt(2);
         navSolutions.Z(currMeasNr)  = xyzdt(3);
+        
         % For first calculation of solution, clock error will be set
         % to be zero
         if (currMeasNr == 1)
             navSolutions.dt(currMeasNr) = 0;  % in unit of (m)
+            navSolutions.dtsys(currMeasNr) = 0;
         else
             navSolutions.dt(currMeasNr) = xyzdt(4);
+            navSolutions.dtsys(currMeasNr) = xyzdt(5);
         end
         %=== Correct local time by clock error estimation =================
         localTime = localTime - xyzdt(4)/settings.c;
@@ -263,6 +267,8 @@ for currMeasNr = 1:measNrSum
         navSolutions.correctedP(activeChnList, currMeasNr) = ...
             navSolutions.rawP(activeChnList, currMeasNr) + ...
             satClkCorr' * settings.c - xyzdt(4);
+        navSolutions.correctedP(GAL_chn, currMeasNr) = ... 
+            navSolutions.correctedP(GAL_chn, currMeasNr) -xyzdt(5);
 
         %% Coordinate conversion ==================================================
 
