@@ -89,7 +89,7 @@ for satNr = 1 : numOfSatellites
     
     % ---- 2.1 Time from ephemeris reference time ----------------------
     % Accounting for beginning or end of week crossover
-    tk  = check_t(time - eph(prn).t_oe);
+    tk  = check_t_GPS(time - eph(prn).t_oe);
     
     % ---- 2.2 Compute semi-major axis ---------------------------------
     % Semi-Major Axis at reference time

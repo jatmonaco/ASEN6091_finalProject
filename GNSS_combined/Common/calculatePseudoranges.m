@@ -1,6 +1,6 @@
 function [pseudoranges,transmitTime,localTime] = ...
              calculatePseudoranges(trackResults,subFrameStart,TOW,currMeasSample, ...
-             localTime,channelList, settings)
+             localTime,channelList, settings, eph)
          
 %calculatePseudoranges finds relative pseudoranges for all satellites
 %listed in CHANNELLIST at the specified millisecond of the processed
@@ -63,9 +63,11 @@ function [pseudoranges,transmitTime,localTime] = ...
 % Transmitting Time of all channels at current measurement sample location
 transmitTime = inf(1, settings.numberOfChannels);
 
+GAL_idx = find([trackResults(channelList).constell] == "GAL");
+
 %--- For all channels in the list ... 
 for channelNr = channelList
-    
+        
     % Find index of I_P stream whose integration contains current 
     % measurment point location 
     for index = 1: length(trackResults(channelNr).absoluteSample)
@@ -89,6 +91,11 @@ for channelNr = channelList
     transmitTime(channelNr) =  (codePhase/settings.codeLength + index - ...
                           subFrameStart(channelNr)) * settings.codeLength/...
                           settings.codeFreqBasis + TOW(channelNr);
+%     if find(GAL_idx == channelNr)
+%         PRN = trackResults(channelNr).PRN;
+%         GAL_dt =  eph.GAL(PRN).A0_G + eph.GAL(PRN).A1_G .* ( eph.GAL(PRN).TOW - eph.GAL(PRN).t_og + 604800 .* (eph.GAL(PRN).WN - eph.GAL(PRN).WN_og ) );
+%         transmitTime(channelNr) = transmitTime(channelNr) + GAL_dt;
+%     end
 end
 
 % At first time of fix, local time is initialized by transmitTime and 

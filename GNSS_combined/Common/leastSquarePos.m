@@ -1,5 +1,5 @@
 function [pos,el, az, dop] = leastSquarePos(satpos,obs,settings)
-%Function calculates the Least Square Solution.
+%Function calculates the Least Square Solution.dt
 %
 %[pos, el, az, dop] = leastSquarePos(satpos, obs, settings);
 %

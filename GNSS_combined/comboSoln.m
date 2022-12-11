@@ -1,16 +1,17 @@
+function [trackResults, navSolutions, satPositions, settings] = comboSoln(GPS_PRNs, GAL_PRNs)
 %% Combining E5a and GPS results
 % This script serves as a first proof-of-concept in combining GNSS
 % constellations. It takes the saved results from running GPS and GAL,
 % combines the results into a unified trkResults and settings to use those
 % together, and riffs off postNavigation.m to create a navigation solution.
-clear
 
 %% Loading in the needed data
 % this takes the run results from each of the constellations and puts them
 % into structures that are useful
-combineResults
+combineResults(GPS_PRNs,GAL_PRNs);
 clear
 load('savedVar\comboTrkResults.mat')
+% load('savedVar\GPS_trkResults.mat')
 settings.elevationMask = -10;   % needed to create a solution, for now
 
 %% Stealing from postNavigation.m
@@ -110,6 +111,8 @@ for channelNr = activeChnList
 
 end %  channelNr = activeChnList
 
+GAL_chn = find([trackResults(activeChnList).constell] == "GAL");
+
 %% Check if the number of satellites is still above 3 =====================
 if (isempty(activeChnList) || (size(activeChnList, 2) < 4))
     % Show error message and exit
@@ -168,6 +171,13 @@ for currMeasNr = 1:measNrSum
     fprintf('Fix: Processing %02d of %02d \n', currMeasNr,measNrSum);
 
     %% Initialization of current measurement ==============================
+    % recording the positions of the satellite
+    satPositions.X(:,currMeasNr) = NaN(settings.numberOfChannels,1);
+    satPositions.Y(:,currMeasNr) = NaN(settings.numberOfChannels,1);
+    satPositions.Z(:,currMeasNr) = NaN(settings.numberOfChannels,1);
+    satPositions.PRN = [trackResults(activeChnList).PRN];
+    satPositions.constell = [trackResults(activeChnList).constell];
+
     % Exclude satellites, that are belove elevation mask
     activeChnList = intersect(find(satElev >= settings.elevationMask), ...
         readyChnList);
@@ -196,15 +206,19 @@ for currMeasNr = 1:measNrSum
     % All output are 1 by settings.numberOfChannels columme vecters.
     [navSolutions.rawP(:, currMeasNr),transmitTime,localTime]=  ...
         calculatePseudoranges(trackResults,subFrameStart,TOW, ...
-        currMeasSample,localTime,activeChnList, settings);
-    % Save transmitTime
+        currMeasSample,localTime,activeChnList, settings, eph);
+    % Save transmitTime 
     navSolutions.transmitTime(activeChnList, currMeasNr) = ...
         transmitTime(activeChnList);
 
     %% Find satellites positions and clocks corrections =======================
     % Outputs are all colume vectors corresponding to activeChnList
-    [satPositions, satClkCorr] = satpos(transmitTime(activeChnList), ...
+    [satPositions_, satClkCorr] = satpos(transmitTime(activeChnList), ...
         [trackResults(activeChnList).PRN], eph, [trackResults(activeChnList).constell]);
+    
+    satPositions.X(activeChnList, currMeasNr) = satPositions_(1,:);
+    satPositions.Y(activeChnList, currMeasNr) = satPositions_(2,:);
+    satPositions.Z(activeChnList, currMeasNr) = satPositions_(1,:);
 
     % Save satClkCorr
     navSolutions.satClkCorr(activeChnList, currMeasNr) = satClkCorr;
@@ -222,7 +236,7 @@ for currMeasNr = 1:measNrSum
         [xyzdt,navSolutions.el(activeChnList, currMeasNr), ...
             navSolutions.az(activeChnList, currMeasNr), ...
             navSolutions.DOP(:, currMeasNr)] =...
-            leastSquarePos(satPositions, clkCorrRawP,settings);
+            leastSquarePos(satPositions_, clkCorrRawP,settings);
 
         %=== Save results ===========================================================
         % Receiver position in ECEF
@@ -314,5 +328,3 @@ for currMeasNr = 1:measNrSum
     localTime = localTime + measSampleStep/settings.samplingFreq ;
 
 end %for currMeasNr...
-
-plotNavigation(navSolutions, settings);

@@ -77,10 +77,10 @@ switch wordType
         eph.WN_LSF    = bin2dec(navWord(129:136));                   % 8 bit 
         eph.DN        = bin2dec(navWord(137:139));                   % 3 bit 
         eph.delt_LSF  = twosComp2dec(navWord(140:147));             % 8 bit 
-        eph.t_og      = bin2dec(navWord(148:155))      * 3600;     % 8 bit 
-        eph.A0_G      = twosComp2dec(navWord(156:171))  * 2^(-35);  % 16 bit 
-        eph.A1_G      = twosComp2dec(navWord(172:183)) * 2^(-51);  % 12 bit 
-        eph.WN_og     = bin2dec(navWord(184:189));                 % 6 bit 
+        eph.t_og      = bin2dec(navWord(148:155))      * 3600;     % 8 bit, reference time for GGTO data !! 
+        eph.A0_G      = twosComp2dec(navWord(156:171))  * 2^(-35);  % 16 bit, constant term of the offset Δtsystems 
+        eph.A1_G      = twosComp2dec(navWord(172:183)) * 2^(-51);  % 12 bit,  rate of change of the offset Δtsystems 
+        eph.WN_og     = bin2dec(navWord(184:189));                 % 6 bit, Week Number of the GPS/Galileo Time Offset reference !!
         
         validWord = 1;
         

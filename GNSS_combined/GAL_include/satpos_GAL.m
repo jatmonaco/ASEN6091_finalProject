@@ -79,7 +79,7 @@ for satNr = 1 : numOfSatellites
     n = n0 + eph(prn).deltan;
 
     % Time correction
-    tk = check_t(time - eph(prn).t_oe);
+    tk = check_t_GAL(time - eph(prn).t_oe);
     
     % Mean anomaly
     M = eph(prn).M_0 + n * tk;
@@ -148,5 +148,7 @@ for satNr = 1 : numOfSatellites
     satClkCorr(satNr) = (eph(prn).a_f2 * dt + eph(prn).a_f1) * dt + ...
                          eph(prn).a_f0 - ...
                          eph(prn).BGD_E1E5a + dtr;
+    GAL_GPS_dt = eph(prn).A0_G + eph(prn).A1_G .* ( eph(prn).TOW - eph(prn).t_og + 604800 .* (eph(prn).WN - eph(prn).WN_og ) );
+    satClkCorr(satNr) = satClkCorr(satNr) + GAL_GPS_dt;
                      
 end % for satNr = 1 : numOfSatellites

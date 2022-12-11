@@ -43,7 +43,7 @@ function settings = initSettings()
 % below - in Nav parameters) to ensure nav subframes are provided
 settings.msToProcess        = 65000;        %[ms]
 % Number of channels to be used for signal processing
-settings.numberOfChannels   = 4;
+settings.numberOfChannels   = 6;
 % Move the starting point of processing. Can be used to start the signal
 % processing at any point in the data record (e.g. for long records). fseek
 % function is used to move the file read point, therefore advance is byte
@@ -71,7 +71,7 @@ settings.codeFreqBasis        = 10.23e6;       % [Hz]
 settings.skipAcquisition    = 0;
 % List of satellites to look for. Some satellites can be excluded to speed
 % up acquisition. (As of June 2020, L5 PRNs include [1 3 4 6 8 9 10 18 24 25 26 27 30 32])
-settings.acqSatelliteList   = [1 6 14 24];  % [PRN numbers]
+settings.acqSatelliteList   = 1:32;  % [PRN numbers]
 % Band around IF to search for satellite signal. Depends on max Doppler.
 % It is single sideband, so the whole search band is tiwce of it.
 settings.acqSearchBand      = 5000;          % [Hz]

@@ -70,7 +70,7 @@ function [eph, firstSubFrame] = NAVdecodingv2(I_P,settings)
     % Sync pattern 
     anti_sync_bits = [-1 1 -1 -1 1 -1 -1 -1 1 1 1 1];
     % Define eph structure and initialize validity flag to zero.
-    eph = eph_structure_init();
+    eph = eph_structure_init_GAL();
     firstSubFrame = 0;
     eph.flag = 0;
     TOWflg = 1;

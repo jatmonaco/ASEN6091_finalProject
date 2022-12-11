@@ -1,4 +1,4 @@
-function plotNavigation(navSolutions, settings)
+function plotNavigation(navSolutions, settings, figNum)
 %Functions plots variations of coordinates over time and a 3D position
 %plot. It plots receiver coordinates in UTM system or coordinate offsets if
 %the true UTM receiver coordinates are provided.  
@@ -74,7 +74,7 @@ if (~isempty(navSolutions))
         refCoord.U = settings.truePosition.U;        
     end    
      
-    figureNumber = 300;
+    figureNumber = figNum;
     % The 300 is chosen for more convenient handling of the open
     % figure windows, when many figures are closed and reopened. Figures
     % drawn or opened by the user, will not be "overwritten" by this
