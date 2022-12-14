@@ -2,6 +2,13 @@
 clear
 close all
 
+% Steps to running this successfully: 
+%   1. Run GPS L5 code with desired parameters, save the entire workspace under
+%   savedVar\L5_soln.mat
+%   2. Run GAL E5a code with the SAME parameters (as close as possible),
+%   save the entire workspace under savedVar\E5a_results.mat
+%   3. Run this file
+
 %% Combo Solution
 % GPS_PRNs = [1 14 24];
 % GAL_PRNs = [36];
@@ -29,12 +36,8 @@ GAL_idx = 6:14;
 
 % Nav results
 plotNavigation(navSolutions_combo, settings, 1);
-
 plotNavigation(navSolutions_GPS, settings, 2);
-
 plotNavigation(navSolutions_GAL, settings, 3);
-
-%%
 
 % comparing average DOP
 avg_GDOP_combo = mean(navSolutions_combo.DOP(1,:))
